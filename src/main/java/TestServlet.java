@@ -17,14 +17,15 @@ import java.util.Map;
 
 public class TestServlet extends HttpServlet {
     private TodoList list = new TodoList();
-     private Configuration cfg = new Configuration(Configuration.VERSION_2_3_26);
+    private Configuration cfg = new Configuration(Configuration.VERSION_2_3_26);
+
     {
-        try{
-           cfg.setTemplateLoader(new FileTemplateLoader(new File(".")));
-       } catch (IOException e) {
-          e.printStackTrace();
-       }
-   }
+        try {
+            cfg.setTemplateLoader(new FileTemplateLoader(new File(".")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -50,12 +51,12 @@ public class TestServlet extends HttpServlet {
 //                "</ol>\n" +
 //                "</body>\n" +
 //                "</html>");
-        try{
+        try {
             Template t = cfg.getTemplate("todo.html");
-            Map<String,Object> map = new HashMap<>();
-            map.put("tasks",list.View());
-            t.process(map,resp.getWriter());
-        }catch(Exception e){
+            Map<String, Object> map = new HashMap<>();
+            map.put("tasks", list.View());
+            t.process(map, resp.getWriter());
+        } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(500);
         }
@@ -63,16 +64,22 @@ public class TestServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String what=req.getParameter("task");
-        String whatID=req.getParameter("taskID");
-        if (what!=null && what.length()>0)
-            try {
+
+        String uri = req.getRequestURI();
+        try {
+            if (uri.equals("/delete")) {
+                String told = req.getParameter("id");
+                int id = Integer.parseInt(told);
+                list.delete(id);
+            } else {
+                String what = req.getParameter("task");
                 list.add(what);
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
-        if (whatID!=null && whatID.length()>0)
-            list.delete(Integer.parseInt(whatID));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //  if (whatID!=null && whatID.length()>0)
+        //       list.delete(Integer.parseInt(whatID));
         resp.sendRedirect("/");
     }
 }

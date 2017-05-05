@@ -39,14 +39,15 @@ public class TodoList {
         return list;
     }
 
-    public boolean delete(int id) {
-        for (Task taskObject : todoList) {
-            if (taskObject.getId() == id) {
-                todoList.remove(taskObject);
-                return true;
+    public void delete(int id)  {
+        try (Connection c = DriverManager.getConnection("jdbc:h2:~/test")) {
+            try (PreparedStatement ps = c.prepareStatement("delete from todo where id=?")) {
+                ps.setInt(1,id);
+                ps.executeUpdate();
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return false;
     }
 
 }
