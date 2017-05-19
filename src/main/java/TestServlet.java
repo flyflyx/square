@@ -22,6 +22,7 @@ public class TestServlet extends HttpServlet {
     {
         try {
             cfg.setTemplateLoader(new FileTemplateLoader(new File(".")));
+           // cfg.setOutputFormat(HTML OutputFormat.Instake);
         } catch (IOException e) {
             e.printStackTrace();
         }
